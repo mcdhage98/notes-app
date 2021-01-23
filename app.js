@@ -1,30 +1,6 @@
-const fs=require('fs')
-const chalk=require('chalk')
-let utils=require('./utils')
-let validator=require('validator')
-const yargs=require('yargs')
-
-// console.log(utils)
-
-// console.log(utils.add(1,2))
-// console.log(validator.isEmail('mc@gmail.com'))
-
-// console.log(chalk.green('hello'))
-
-// fs.writeFileSync('notes.txt','this was crreated by me'+Date.now())
-
-//console.log(process.argv)
-
-
-
-let command=process.argv[2];
-if(command=='add'){
-    console.log('adding')
-}
-else if(command=='delete'){
-    console.log('deleting')
-}
-else console.log("invalid choice")
+const chalk = require('chalk')
+const yargs = require('yargs')
+const notes = require('./notes.js')
 
 // Customize yargs version
 yargs.version('1.1.0')
@@ -33,8 +9,21 @@ yargs.version('1.1.0')
 yargs.command({
     command: 'add',
     describe: 'Add a new note',
-    handler: function () {
-        console.log('Adding a new note!')
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        },
+        body: {
+            describe: 'Note body',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        console.log(argv)
+        notes.addNote(argv.title, argv.body)
     }
 })
 
@@ -42,8 +31,15 @@ yargs.command({
 yargs.command({
     command: 'remove',
     describe: 'Remove a note',
-    handler: function () {
-        console.log('Removing the note')
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        notes.removeNote(argv.title)
     }
 })
 
@@ -51,8 +47,8 @@ yargs.command({
 yargs.command({
     command: 'list',
     describe: 'List your notes',
-    handler: function () {
-        console.log('Listing out all notes')
+    handler() {
+        notes.listNotes()
     }
 })
 
@@ -60,9 +56,16 @@ yargs.command({
 yargs.command({
     command: 'read',
     describe: 'Read a note',
-    handler: function () {
-        console.log('Reading a note')
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        notes.readNote(argv.title)
     }
 })
 
-console.log(yargs.argv)
+yargs.parse()
